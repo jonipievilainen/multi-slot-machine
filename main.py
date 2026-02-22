@@ -8,7 +8,7 @@ import pygame
 import sys
 
 import config
-from ui import init_display, get_fonts, draw_text, draw_button, draw_credits_bar
+from ui import init_display, get_fonts, draw_text, draw_button, draw_credits_bar, draw_scanlines
 
 
 def run_main_menu(screen, clock, fonts):
@@ -64,18 +64,19 @@ def run_main_menu(screen, clock, fonts):
                             return
                         break
 
-        # Piirto
+        # Piirto: sininen tausta, keltainen otsikko, vihreä/harmaa napit
         screen.fill(config.COLOR_BG)
+        pygame.draw.rect(screen, config.COLOR_SCREEN_BLUE, (0, 0, config.SCREEN_WIDTH, config.SCREEN_HEIGHT))
         bar_height = draw_credits_bar(screen, credits, fonts)
 
         draw_text(
             screen, "RETRO UHKAPELI",
             config.SCREEN_WIDTH // 2, bar_height + 30,
-            fonts["title"], config.COLOR_ACCENT, center=True
+            fonts["title"], config.COLOR_TEXT_YELLOW, center=True
         )
         if credits < config.MIN_BET:
             draw_text(
-                screen, "Lisää credittejä pelataksesi",
+                screen, "Lisaa creditteja pelataksesi",
                 config.SCREEN_WIDTH // 2, bar_height + 75,
                 fonts["small"], config.COLOR_TEXT_DIM, center=True
             )
@@ -85,8 +86,13 @@ def run_main_menu(screen, clock, fonts):
             if key == "poker" or key == "slot":
                 if credits < config.MIN_BET:
                     hover = False
-            draw_button(screen, rect, label, fonts["menu"], hover)
+            style = "green" if key in ("poker", "slot") else "grey"
+            if key == "quit":
+                style = "grey"
+            draw_button(screen, rect, label, fonts["menu"], hover, style=style)
 
+        if config.SCANLINE_ALPHA > 0:
+            draw_scanlines(screen)
         pygame.display.flip()
         clock.tick(30)
 
